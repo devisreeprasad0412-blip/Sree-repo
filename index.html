@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gaming Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #1e272e;
+      color: #fff;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: #0f1419;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h1 {
+      margin: 0;
+      color: #00a8ff;
+      font-size: 22px;
+    }
+
+    .navbar .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .navbar img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    /* Layout */
+    .container {
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 200px;
+      background: #2f3640;
+      padding: 20px;
+      height: calc(100vh - 55px);
+    }
+
+    .sidebar h3 {
+      margin-top: 0;
+      color: #00a8ff;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .sidebar ul li:hover {
+      background: #353b48;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 15px;
+      border-left: 5px solid #00a8ff;
+      padding-left: 10px;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .game-card {
+      background: #353b48;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+
+    .game-card:hover {
+      transform: scale(1.05);
+    }
+
+    .game-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+    }
+
+    .game-card h4 {
+      margin: 10px;
+    }
+
+    /* Popup */
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background: #2f3640;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      text-align: center;
+    }
+
+    .popup-content img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .close-btn {
+      margin-top: 15px;
+      padding: 8px 15px;
+      border: none;
+      background: #00a8ff;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <h1>🎮 GameZone Dashboard</h1>
+    <div class="profile">
+      <span>Player1</span>
+      <img src="https://via.placeholder.com/40" alt="Profile">
+    </div>
+  </div>
+
+  <!-- Container -->
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h3>Categories</h3>
+      <ul>
+        <li>Action</li>
+        <li>Adventure</li>
+        <li>Racing</li>
+        <li>Shooting</li>
+        <li>Sports</li>
+      </ul>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      <h2 class="section-title">Featured Games</h2>
+      <div class="game-grid" id="gameList">
+        <!-- Games rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup -->
+  <div class="popup" id="gamePopup">
+    <div class="popup-content">
+      <img id="popupImg" src="" alt="Game">
+      <h3 id="popupTitle"></h3>
+      <p id="popupDesc"></p>
+      <button class="close-btn" onclick="closePopup()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Game Data
+    const games = [
+      { id: 1, title: "Cyber Warrior", img: "https://via.placeholder.com/400x200/00a8ff/ffffff?text=Cyber+Warrior", desc: "A futuristic action-packed adventure." },
+      { id: 2, title: "Racing Pro", img: "https://via.placeholder.com/400x200/f39c12/ffffff?text=Racing+Pro", desc: "High-speed racing game with stunning graphics." },
+      { id: 3, title: "Zombie Hunt", img: "https://via.placeholder.com/400x200/e84118/ffffff?text=Zombie+Hunt", desc: "Survive waves of zombies in this shooter." },
+      { id: 4, title: "Fantasy Quest", img: "https://via.placeholder.com/400x200/9b59b6/ffffff?text=Fantasy+Quest", desc: "Embark on a magical journey with heroes." },
+      { id: 5, title: "Street Fight", img: "https://via.placeholder.com/400x200/2ecc71/ffffff?text=Street+Fight", desc: "Classic arcade fighting with modern graphics." }
+    ];
+
+    const gameList = document.getElementById("gameList");
+    const popup = document.getElementById("gamePopup");
+    const popupImg = document.getElementById("popupImg");
+    const popupTitle = document.getElementById("popupTitle");
+    const popupDesc = document.getElementById("popupDesc");
+
+    // Render Games
+    games.forEach(game => {
+      const div = document.createElement("div");
+      div.classList.add("game-card");
+      div.innerHTML = `
+        <img src="${game.img}" alt="${game.title}">
+        <h4>${game.title}</h4>
+      `;
+      div.onclick = () => openPopup(game);
+      gameList.appendChild(div);
+    });
+
+    // Open Popup
+    function openPopup(game) {
+      popupImg.src = game.img;
+      popupTitle.innerText = game.title;
+      popupDesc.innerText = game.desc;
+      popup.style.display = "flex";
+    }
+
+    // Close Popup
+    function closePopup() {
+      popup.style.display = "none";
+    }
+  </script>
+</body>
+</html>
